@@ -1,0 +1,44 @@
+---
+version: "2"
+services:
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr 
+    environment:
+      - PUID=999
+      - PGID=998
+      - TZ=Europe/London
+    volumes:
+      - /media/config/sonarr:/config
+      - /media/tv:/tv
+      - /media/incoming/complete/tv:/downloads
+    ports:
+      - 8989:8989
+    restart: always
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr 
+    environment:
+      - PUID=999
+      - PGID=998
+      - TZ=Europe/London
+    volumes:
+      - /media/config/radarr:/config
+      - /media/movies:/movies
+      - /media/incoming/complete/movies:/downloads
+    ports:
+      - 7878:7878
+    restart: always
+  nzbget:
+    image: linuxserver/nzbget
+    container_name: nzbget 
+    environment:
+      - PUID=999
+      - PGID=998
+      - TZ=Europe/London
+    volumes:
+      - /media/config/nzbget:/config
+      - /media/incoming:/downloads
+    ports:
+      - 6789:6789
+    restart: always
