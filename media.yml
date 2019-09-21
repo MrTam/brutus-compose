@@ -1,0 +1,78 @@
+version: "2"
+
+networks:
+  tv:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
+
+services:
+  plex:
+    image: linuxserver/plex
+    container_name: plex 
+    network_mode: host
+    environment:
+      - PUID=999
+      - PGID=998
+      - TZ=Europe/London
+    volumes:
+      - /media/config/plex:/config
+      - /media/tv:/tv
+      - /media/movies:/movies
+    devices:
+      - /dev/dri:/dev/dri
+    restart: always
+
+  channels-dvr:
+    image: fancybits/channels-dvr:latest
+    container_name: channels-dvr
+    network_mode: host
+    environment:
+      - PUID=999
+      - PGID=998
+      - TZ=Europe/London
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - /media/config/channels-dvr/config:/channels-dvr
+      - /media/recordings:/shares/DVR
+    restart: always
+
+  tvheadend:
+    image: mrtam86/tvheadend
+    container_name: tvheadend 
+    networks:
+      tv:
+        ipv4_address: 172.18.0.10
+    environment:
+      - PUID=999
+      - PGID=998
+      - TZ=Europe/London
+    volumes:
+      - /media/config/tvheadend:/config
+    devices:
+      - /dev/dvb:/dev/dvb
+    restart: always
+
+  relay:
+    image: docker.cloudsmith.io/mrtam/relay/relay:latest 
+    container_name: relay 
+    networks:
+      tv:
+        ipv4_address: 172.18.0.11
+    ports:
+      - 5004:5004
+    environment:
+      - PUID=999
+      - PGID=998
+      - TZ=Europe/London
+      - relay_address=172.18.0.11
+      - relay_tvheadend__url=http://172.18.0.10:9981
+      - relay_tvheadend__username=relay
+      - relay_tvheadend__password=relay
+      - relay_tunercount=4
+      - relay_databasepath=/config
+    volumes:
+      - /media/config/relay:/config
+    restart: always

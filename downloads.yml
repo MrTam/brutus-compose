@@ -1,5 +1,5 @@
----
 version: "2"
+
 services:
   sonarr:
     image: linuxserver/sonarr
@@ -15,6 +15,7 @@ services:
     ports:
       - 8989:8989
     restart: always
+
   radarr:
     image: linuxserver/radarr
     container_name: radarr 
@@ -29,6 +30,7 @@ services:
     ports:
       - 7878:7878
     restart: always
+
   nzbget:
     image: linuxserver/nzbget
     container_name: nzbget 
