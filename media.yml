@@ -45,6 +45,8 @@ services:
     networks:
       tv:
         ipv4_address: 172.18.0.10
+    ports:
+      - 9981:9981
     environment:
       - PUID=999
       - PGID=998
