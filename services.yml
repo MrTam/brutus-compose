@@ -10,11 +10,12 @@ services:
       - /media/config/pihole/pihole:/etc/pihole/
       - /media/config/pihole/dnsmasq:/etc/dnsmasq.d/
     dns:
+      - 127.0.0.1
       - 1.1.1.1
       - 1.0.0.1
     restart: always
     ports:
-      - 53:53
-      - 67:67
+      - 53:53/tcp
+      - 53:53/udp
       - 80:80
       - 443:443
