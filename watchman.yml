@@ -1,0 +1,42 @@
+version: "2"
+
+services:
+
+  influxdb:
+    image: influxdb:alpine
+    container_name: influxdb
+    ports:
+      - 8086:8086
+    restart: always
+    volumes:
+      - /media/config/influxdb:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=watchman
+      - INFLUXDB_HTTP_AUTH_ENABLED=true
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin
+      - INFLUXDB_WRITE_USER=rtl433
+      - INFLUXDB_WRITE_USER_PASSWORD=rtl433
+      - INFLUXDB_READ_USER=watchmon
+      - INFLUXDB_READ_USER_PASSWORD=watchmon
+
+  chronograf:
+    image: chronograf:alpine
+    container_name: chronograf
+    depends_on: [influxdb]
+    ports:
+      - 8888:8888
+    volumes:
+      - /media/config/chronograf:/var/lib/chronograf
+    restart: always
+
+  sdr-server:
+    image: docker.cloudsmith.io/mrtam/watchmon/sdr-server:latest
+    container_name: sdr-server
+    restart: always
+    depends_on: [influxdb]
+    privileged: true
+    environment:
+      - INFLUX_HOST=influxdb
+      - INFLUX_USER=rtl433
+      - INFLUX_PASSWORD=rtl433
