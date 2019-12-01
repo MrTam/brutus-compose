@@ -1,7 +1,6 @@
 version: "2"
 
 services:
-
   influxdb:
     image: influxdb:alpine
     container_name: influxdb
@@ -29,6 +28,18 @@ services:
     volumes:
       - /media/config/chronograf:/var/lib/chronograf
     restart: always
+
+  kapacitor:
+    image: kapacitor:alpine
+    container_name: kapacitor
+    depends_on: [influxdb]
+    ports:
+      - 9092:9092
+    volumes:
+      - /media/config/kapacitor:/var/lib/kapacitor
+    restart: always
+    environment:
+      - KAPACITOR_INFLUXDB_0_URLS_0=http://admin:admin@influxdb:8086
 
   sdr-server:
     image: docker.cloudsmith.io/mrtam/watchmon/sdr-server:latest
